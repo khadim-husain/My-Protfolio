@@ -1,0 +1,542 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-base: #09090b;
+  --color-raised: #111113;
+  --color-card: #151517;
+  --color-muted: #a1a1aa;
+  --color-accent: #ff3b2f;
+  --color-volt: #3b82ff;
+  --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
+}
+
+:root {
+  --volt: #3b82ff;
+  --accent: #ff3b2f;
+}
+
+html {
+  background: #09090b;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #09090b;
+  color: #fff;
+  font-family: var(--font-sans);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--volt);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------------ build states */
+/* Hidden until an agent builds it. Without JS (no data-agents attr) everything is visible. */
+html[data-agents="on"] [data-build]:not([data-built]) {
+  opacity: 0;
+}
+
+html[data-agents="on"] [data-build][data-anim="pop"]:not([data-built]) {
+  scale: 0.9;
+}
+
+html[data-agents="on"] [data-build][data-anim="wipe"]:not([data-built]) {
+  opacity: 1;
+  clip-path: inset(-12% 100% -12% -12%);
+}
+
+html[data-agents="on"] [data-build][data-anim="type"]:not([data-built]) {
+  opacity: 1;
+}
+
+html[data-agents="on"] [data-build][data-anim="type"]:not([data-built]) .ch {
+  opacity: 0;
+}
+
+.word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.sr-only-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ hero */
+.hero-bg {
+  background:
+    radial-gradient(60% 55% at 50% 72%, rgba(255, 59, 47, 0.42) 0%, rgba(255, 59, 47, 0.12) 45%, transparent 72%),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 100% 64px,
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 100%,
+    #09090b;
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+}
+
+.portfolio-word {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 22.5vw, 26rem);
+  line-height: 0.86;
+  padding-top: 0.04em;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  background-image:
+    linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.6) 50%, transparent 62%),
+    linear-gradient(180deg, #ff3b2f 0%, #d0200f 34%, #5a0d08 66%, #09090b 100%);
+  background-size: 250% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: 0% 0, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: sheen 6s ease-in-out 1.2s infinite;
+}
+
+@keyframes sheen {
+  0% {
+    background-position: 0% 0, 0 0;
+  }
+
+  55%,
+  100% {
+    background-position: 100% 0, 0 0;
+  }
+}
+
+.portrait-img {
+  filter: grayscale(1) contrast(1.2) brightness(0.96) drop-shadow(0 18px 40px rgba(0, 0, 0, 0.65));
+  -webkit-mask-image: linear-gradient(to bottom, #000 66%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 66%, transparent 99%);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ------------------------------------------------------------------ marquee */
+.marquee-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 46s linear infinite;
+}
+
+.marquee-track:hover,
+.marquee-track:focus-within {
+  animation-play-state: paused;
+}
+
+.marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+  padding-right: 1rem;
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ------------------------------------------------------------------ misc */
+@keyframes ping-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  80%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.ping-soft {
+  animation: ping-soft 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ------------------------------------------------------------------ agents */
+.agent-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+}
+
+html:not([data-agents="on"]) .agent-layer {
+  display: none !important;
+}
+
+/* Cursors are completely hidden by default */
+.agent-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform: translate3d(0, -9999px, 0);
+  transition: opacity 0.16s ease-out;
+}
+
+.agent-cursor[data-active="1"] {
+  display: block !important;
+  visibility: visible;
+}
+
+.agent-cursor[data-active="0"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Pause infinite CSS animations whenever the cursor is idle/inactive */
+.agent-cursor[data-active="0"] .agent-bot,
+.agent-cursor[data-active="0"] .agent-eye,
+.agent-cursor[data-active="0"] .agent-antenna,
+.agent-sel[data-active="0"] {
+  animation-play-state: paused !important;
+}
+
+/* Sleek, balanced SVG pointer arrow */
+.agent-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 15px;
+  height: 18px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+}
+
+/* Robot icon companion positioned next to arrow */
+.agent-bot {
+  position: absolute;
+  left: 11px;
+  top: 11px;
+  width: 22px;
+  height: 17px;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.agent-head {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  border: 1.3px solid var(--c);
+  background: linear-gradient(#2a2a30, #131316);
+  box-shadow: 0 0 10px -2px var(--c);
+}
+
+.agent-eye {
+  position: absolute;
+  top: 6px;
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 5px var(--c);
+  animation: blink 4.2s infinite;
+}
+
+.agent-eye.l {
+  left: 4.5px;
+}
+
+.agent-eye.r {
+  right: 4.5px;
+  animation-delay: 0.07s;
+}
+
+.agent-antenna {
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 1.5px;
+  height: 6px;
+  margin-left: -0.75px;
+  background: var(--c);
+  transform-origin: bottom center;
+  animation: wag 1.6s ease-in-out infinite;
+}
+
+.agent-antenna::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -1.5px;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 6px var(--c);
+}
+
+.agent-shadow {
+  position: absolute;
+  left: 13px;
+  top: 30px;
+  width: 17px;
+  height: 3.5px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  filter: blur(1.5px);
+}
+
+/* Distinctive agent name tag */
+.agent-tag {
+  position: absolute;
+  left: 10px;
+  top: 32px;
+  white-space: nowrap;
+  padding: 2.5px 5.5px;
+  border-radius: 3.5px;
+  font: 600 9px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+  background: var(--c);
+  color: #09090b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes wag {
+
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+/* Blueprint selection rectangle */
+.agent-sel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, width, height, opacity;
+  border: 1.4px solid var(--volt);
+  background: rgba(59, 130, 255, 0.08);
+  box-shadow: 0 0 20px rgba(59, 130, 255, 0.2);
+  outline: 1px dashed rgba(59, 130, 255, 0.55);
+  outline-offset: 3.5px;
+  animation: breathe 0.9s ease-in-out infinite alternate;
+}
+
+.agent-sel[data-active="0"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.agent-sel i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 1.5px;
+  background: #0b1020;
+  border: 1.4px solid var(--volt);
+}
+
+.agent-sel i:nth-of-type(1) {
+  left: -4.5px;
+  top: -4.5px;
+}
+
+.agent-sel i:nth-of-type(2) {
+  right: -4.5px;
+  top: -4.5px;
+}
+
+.agent-sel i:nth-of-type(3) {
+  left: -4.5px;
+  bottom: -4.5px;
+}
+
+.agent-sel i:nth-of-type(4) {
+  right: -4.5px;
+  bottom: -4.5px;
+}
+
+.agent-sel b {
+  position: absolute;
+  left: -1px;
+  bottom: calc(100% + 6px);
+  white-space: nowrap;
+  padding: 2.5px 6px;
+  border-radius: 3.5px;
+  font: 600 9px/1 var(--font-mono);
+  background: var(--c);
+  color: #09090b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes breathe {
+  from {
+    outline-offset: 2.5px;
+    outline-color: rgba(59, 130, 255, 0.35);
+  }
+
+  to {
+    outline-offset: 5px;
+    outline-color: rgba(59, 130, 255, 0.8);
+  }
+}
+
+/* Mobile responsive optimization: clean, compact, fully visible agent */
+@media (max-width: 767px) {
+  .agent-arrow {
+    width: 12px;
+    height: 15px;
+  }
+
+  .agent-bot {
+    width: 18px;
+    height: 14px;
+    left: 9px;
+    top: 9px;
+  }
+
+  .agent-head {
+    border-radius: 4px;
+    border-width: 1.1px;
+  }
+
+  .agent-eye {
+    width: 2.8px;
+    height: 2.8px;
+    top: 5px;
+  }
+
+  .agent-eye.l {
+    left: 3.5px;
+  }
+
+  .agent-eye.r {
+    right: 3.5px;
+  }
+
+  .agent-antenna {
+    height: 5px;
+    top: -5px;
+  }
+
+  .agent-antenna::after {
+    width: 3.5px;
+    height: 3.5px;
+    top: -2.5px;
+    left: -1px;
+  }
+
+  .agent-shadow {
+    left: 10px;
+    top: 24px;
+    width: 14px;
+    height: 2.5px;
+  }
+
+  .agent-tag {
+    left: 8px;
+    top: 26px;
+    padding: 2px 4px;
+    font-size: 8px;
+    border-radius: 3px;
+  }
+
+  .agent-sel b {
+    font-size: 8px;
+    padding: 2px 5px;
+    bottom: calc(100% + 4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .agent-layer {
+    display: none !important;
+  }
+
+  .portfolio-word,
+  .agent-bot,
+  .agent-eye,
+  .agent-antenna,
+  .agent-sel,
+  .ping-soft {
+    animation: none !important;
+  }
+
+  .marquee-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .marquee-group {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+
+  .marquee-group[aria-hidden="true"] {
+    display: none;
+  }
+
+  .marquee-mask {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
